@@ -12,11 +12,13 @@ interface CanvasTool {
 }
 
 enum Direction {
-    Up, Down, Left, Right
+  Up,
+  Down,
+  Left,
+  Right,
 }
 // TODO: Adaptive canvas and pen color?
 export const LiveCanvasPage = () => {
-
   const liveCanvasRef = useRef<HTMLDivElement | null>(null);
   const { liveCanvas, inkingManager } = useLiveCanvas(
     UNIQUE_KEY,
@@ -30,12 +32,12 @@ export const LiveCanvasPage = () => {
     /* isCursorShared */ true
   );
 
-    meeting.getAppContentStageSharingState((error, result) => {
-        if (result?.isAppSharing) {
-            // close sidepanel upon shared to stage
-            // -> cannot be done since there's no such api. (at least according to my knowledge?)
-        }
-    })
+  meeting.getAppContentStageSharingState((error, result) => {
+    if (result?.isAppSharing) {
+      // close sidepanel upon shared to stage
+      // -> cannot be done since there's no such api. (at least according to my knowledge?)
+    }
+  });
 
   const setToPen = useCallback(() => {
     if (inkingManager) {
@@ -69,47 +71,51 @@ export const LiveCanvasPage = () => {
 
   const shareCursor = useCallback(() => {
     if (liveCanvas) {
-        liveCanvas.isCursorShared = true
-        console.log(`current isCursorShared state: ${liveCanvas.isCursorShared}`)
+      liveCanvas.isCursorShared = true;
+      console.log(`current isCursorShared state: ${liveCanvas.isCursorShared}`);
     }
-  }, [liveCanvas])
+  }, [liveCanvas]);
 
   const zoomIn = useCallback(() => {
     if (inkingManager) {
-        inkingManager.scale += 0.1;
+      inkingManager.scale += 0.1;
     }
-  }, [inkingManager])
+  }, [inkingManager]);
 
   const zoomOut = useCallback(() => {
     if (inkingManager && inkingManager.scale > 0.1) {
-        inkingManager.scale -= 0.1;
+      inkingManager.scale -= 0.1;
     }
-  }, [inkingManager])
+  }, [inkingManager]);
 
-  const pan = useCallback((direction: Direction, amount: number) => {
-    if (!inkingManager) { return }
+  const pan = useCallback(
+    (direction: Direction, amount: number) => {
+      if (!inkingManager) {
+        return;
+      }
 
-    const currentOffset = inkingManager.offset
+      const currentOffset = inkingManager.offset;
 
-    const newOffset: IPoint = { ...currentOffset }
-    switch (direction) {
+      const newOffset: IPoint = { ...currentOffset };
+      switch (direction) {
         case Direction.Up:
-            newOffset.y -= amount
-            break;
+          newOffset.y -= amount;
+          break;
         case Direction.Down:
-            newOffset.y += amount
-            break;
+          newOffset.y += amount;
+          break;
         case Direction.Left:
-            newOffset.x -= amount
-            break;
+          newOffset.x -= amount;
+          break;
         case Direction.Right:
-            newOffset.x += amount
-            break;
-    }
+          newOffset.x += amount;
+          break;
+      }
 
-    inkingManager.offset = newOffset
-  }, [inkingManager])
-
+      inkingManager.offset = newOffset;
+    },
+    [inkingManager]
+  );
 
   const toolbarElements: CanvasTool[] = [
     { label: "Pen", onClick: setToPen },

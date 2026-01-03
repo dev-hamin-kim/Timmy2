@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import * as teamJS from "@microsoft/teams-js";
-import { LiveShareProvider, useLiveCanvas } from "@microsoft/live-share-react";
+import { LiveShareProvider } from "@microsoft/live-share-react";
 
 import { LiveCanvasPage } from "./LiveCanvasPage";
 import "./App.css";
