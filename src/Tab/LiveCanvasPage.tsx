@@ -1,10 +1,13 @@
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useState } from "react";
 
 import { InkingTool, IPoint } from "@microsoft/live-share-canvas";
 import { useLiveCanvas } from "@microsoft/live-share-react";
 import { meeting } from "@microsoft/teams-js";
+import { generateUniqueId } from "@microsoft/live-share-canvas/bin/core/internals";
 
-const UNIQUE_KEY = "124-fa32g-bs-custom-live-canvas-1249fjadfne";
+import { PollPage } from "../Poll/PollPage";
+
+const UNIQUE_KEY = generateUniqueId();
 
 interface CanvasTool {
   label: string;
@@ -19,17 +22,11 @@ enum Direction {
 }
 // TODO: Adaptive canvas and pen color?
 export const LiveCanvasPage = () => {
+  const [isPollsShown, setIsPollsShown] = useState(false);
   const liveCanvasRef = useRef<HTMLDivElement | null>(null);
   const { liveCanvas, inkingManager } = useLiveCanvas(
     UNIQUE_KEY,
-    liveCanvasRef,
-    /* active */ undefined,
-    /* tool */ undefined,
-    /* lineBrush */ undefined,
-    /* offset */ undefined,
-    /* scale */ undefined,
-    /* referencePoint */ undefined,
-    /* isCursorShared */ true
+    liveCanvasRef
   );
 
   meeting.getAppContentStageSharingState((error, result) => {
@@ -70,10 +67,9 @@ export const LiveCanvasPage = () => {
   }, [inkingManager]);
 
   const shareCursor = useCallback(() => {
-    if (liveCanvas) {
-      liveCanvas.isCursorShared = true;
-      console.log(`current isCursorShared state: ${liveCanvas.isCursorShared}`);
-    }
+    if (!liveCanvas || !inkingManager) return;
+
+    liveCanvas.isCursorShared = true;
   }, [liveCanvas]);
 
   const zoomIn = useCallback(() => {
@@ -117,6 +113,26 @@ export const LiveCanvasPage = () => {
     [inkingManager]
   );
 
+  // delete this later
+//   const openDialog = useCallback(() => {
+//     const size: DialogSize = {
+//       height: DialogDimension.Medium,
+//       width: DialogDimension.Medium,
+//     };
+//     dialog.adaptiveCard.open(
+//       { card: adaptiveCardCreatePoll, size: size },
+//       (response) => {
+//         if (response.err) {
+//           console.log(response.err);
+//           return;
+//         }
+
+//         if (response.result === undefined) return;
+//         console.log("response.result:", response.result);
+//       }
+//     );
+//   }, []);
+
   const toolbarElements: CanvasTool[] = [
     { label: "Pen", onClick: setToPen },
     { label: "Laser Pointer", onClick: setToLaserPointer },
@@ -130,6 +146,9 @@ export const LiveCanvasPage = () => {
     { label: "Down", onClick: () => { pan(Direction.Down, 10) } },
     { label: "Left", onClick: () => { pan(Direction.Left, 10) } },
     { label: "Right", onClick: () => { pan(Direction.Right, 10) } },
+    { label: "Polls", onClick: () => {
+        setIsPollsShown(!isPollsShown)
+    } },
   ];
 
   return (
@@ -150,6 +169,21 @@ export const LiveCanvasPage = () => {
           }}
           ref={liveCanvasRef}
         />
+        { isPollsShown ? (
+            <div
+        style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background: "#0420fa"
+        }}
+        >
+            <PollPage />
+        </div>
+        ) : (<></>) }
+        
       </div>
       <div>
         {toolbarElements.map((element) => {
