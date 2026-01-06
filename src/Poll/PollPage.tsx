@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
+import { LiveState } from "@microsoft/live-share";
 import { useLiveShareContext } from "@microsoft/live-share-react";
 import {
   app,
@@ -12,6 +13,7 @@ import {
 import { useLivePoll } from "./useLivePoll";
 import { CreatePollResult, PollState } from "./types";
 import { createPollCard } from "./AdaptiveCards";
+import { PollList } from "./PollList";
 
 export const PollPage = () => {
   const { pollState, isInitialized } = useLivePoll();
@@ -86,98 +88,67 @@ export const PollPage = () => {
     width: DialogDimension.Medium,
   };
 
+  const onClickingCreatePoll = () => {
+    dialog.adaptiveCard.open(
+      { card: JSON.stringify(createPollCard), size: cardSize },
+      async (response) => {
+        if (response.err) {
+          console.log(response.err);
+          return;
+        }
+
+        if (response.result === undefined) return;
+        console.log("response1: ", response.result);
+        // Ensure result is an object and matches expected shape at runtime,
+        // then cast to CreatePollResult for TypeScript and pass the actual user id string.
+        if (typeof response.result !== "string") {
+          console.log("response2: ", response.result);
+          const result = response.result as CreatePollResult;
+
+          // Basic runtime validation to avoid calling handler with an invalid shape
+          if (
+            typeof result.action === "undefined" ||
+            typeof result.question !== "string" ||
+            typeof result.option1 !== "string" ||
+            typeof result.option2 !== "string" ||
+            typeof result.allowMultiple === "undefined"
+          ) {
+            console.warn(
+              "Adaptive card returned unexpected result shape:",
+              result
+            );
+            return;
+          }
+
+          if (!userID.current) {
+            console.warn("userID not available");
+            return;
+          }
+          console.log("response3: ", response.result);
+
+          await handleCreatePoll(result, userID.current);
+        } else {
+          const parsedResult = JSON.parse(response.result) as CreatePollResult;
+          console.log("parsed Result", parsedResult);
+
+          if (!userID.current) {
+            console.warn("userID not available");
+            return;
+          }
+
+          await handleCreatePoll(parsedResult, userID.current);
+        }
+      }
+    );
+  };
+
   return (
     <>
       <div>
-        <button
-          onClick={() => {
-            dialog.adaptiveCard.open(
-              { card: JSON.stringify(createPollCard), size: cardSize },
-              async (response) => {
-                if (response.err) {
-                  console.log(response.err);
-                  return;
-                }
-
-                if (response.result === undefined) return;
-                console.log("response1: ", response.result);
-                // Ensure result is an object and matches expected shape at runtime,
-                // then cast to CreatePollResult for TypeScript and pass the actual user id string.
-                if (typeof response.result !== "string") {
-                  console.log("response2: ", response.result);
-                  const result = response.result as CreatePollResult;
-
-                  // Basic runtime validation to avoid calling handler with an invalid shape
-                  if (
-                    typeof result.action === "undefined" ||
-                    typeof result.question !== "string" ||
-                    typeof result.option1 !== "string" ||
-                    typeof result.option2 !== "string" ||
-                    typeof result.allowMultiple === "undefined"
-                  ) {
-                    console.warn(
-                      "Adaptive card returned unexpected result shape:",
-                      result
-                    );
-                    return;
-                  }
-
-                  if (!userID.current) {
-                    console.warn("userID not available");
-                    return;
-                  }
-                  console.log("response3: ", response.result);
-
-                  await handleCreatePoll(result, userID.current);
-                } else {
-                  const parsedResult = JSON.parse(
-                    response.result
-                  ) as CreatePollResult;
-                  console.log("parsed Result", parsedResult);
-
-                  if (!userID.current) {
-                    console.warn("userID not available");
-                    return;
-                  }
-
-                  await handleCreatePoll(parsedResult, userID.current);
-                }
-              }
-            );
-          }}
-        >
-          Create Poll
-        </button>
-        <button
-          onClick={async () => {
-            if (!pollState) return;
-
-            // Always read from authoritative shared state
-            const currentPolls = pollState.state;
-            console.log("current polls (shared state): ", currentPolls);
-            setPolls(currentPolls);
-          }}
-        >
-          View Polls
-        </button>
-        <div>
-          {polls.length === 0 && <p>No polls yet</p>}
-
-          {polls.map((poll) => (
-            <div
-              key={poll.id}
-              style={{ border: "1px solid #ccc", margin: 8, padding: 8 }}
-            >
-              <h3>{poll.question}</h3>
-              <ul>
-                {poll.options.map((opt) => (
-                  <li key={opt.id}>{opt.text}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
+        <button onClick={onClickingCreatePoll}>Create Poll</button>
+        <PollList polls={polls} userID={userID.current} pollState={pollState} />
       </div>
     </>
   );
 };
+
