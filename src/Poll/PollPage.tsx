@@ -1,14 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { LiveState } from "@microsoft/live-share";
-import { useLiveShareContext } from "@microsoft/live-share-react";
-import {
-  app,
-  dialog,
-  DialogDimension,
-  DialogSize,
-  meeting,
-} from "@microsoft/teams-js";
+import { app, dialog, DialogDimension } from "@microsoft/teams-js";
 
 import { useLivePoll } from "./useLivePoll";
 import { CreatePollResult, PollState } from "./types";
@@ -151,4 +143,3 @@ export const PollPage = () => {
     </>
   );
 };
-

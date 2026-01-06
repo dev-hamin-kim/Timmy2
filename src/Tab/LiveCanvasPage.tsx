@@ -113,26 +113,6 @@ export const LiveCanvasPage = () => {
     [inkingManager]
   );
 
-  // delete this later
-//   const openDialog = useCallback(() => {
-//     const size: DialogSize = {
-//       height: DialogDimension.Medium,
-//       width: DialogDimension.Medium,
-//     };
-//     dialog.adaptiveCard.open(
-//       { card: adaptiveCardCreatePoll, size: size },
-//       (response) => {
-//         if (response.err) {
-//           console.log(response.err);
-//           return;
-//         }
-
-//         if (response.result === undefined) return;
-//         console.log("response.result:", response.result);
-//       }
-//     );
-//   }, []);
-
   const toolbarElements: CanvasTool[] = [
     { label: "Pen", onClick: setToPen },
     { label: "Laser Pointer", onClick: setToLaserPointer },
