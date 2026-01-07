@@ -1,23 +1,18 @@
-import { useRef, useCallback, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 
 import { useLiveCanvas } from "@microsoft/live-share-react";
-import { generateUniqueId } from "@microsoft/live-share-canvas/bin/core/internals";
-
 import { PollPage } from "../Poll/PollPage";
 import { CalendarPage } from "../Calendar/CalendarPage";
 import { LiveCanvasToolBar } from "./LiveCanvasToolbar";
 
-const UNIQUE_KEY = generateUniqueId();
+const SHARED_CANVAS_KEY = "TIMMY_SHARED_CANVAS";
 
 // TODO: Adaptive canvas and pen color?
 export const LiveCanvasPage = () => {
   const [isPollsShown, setIsPollsShown] = useState(false);
   const [isCalendarShown, setIsCalendarShown] = useState(false);
   const liveCanvasRef = useRef<HTMLDivElement | null>(null);
-  const { liveCanvas, inkingManager } = useLiveCanvas(
-    UNIQUE_KEY,
-    liveCanvasRef
-  );
+  const { inkingManager } = useLiveCanvas(SHARED_CANVAS_KEY, liveCanvasRef);
 
   const togglePolls = () => {
     setIsPollsShown((prev) => !prev);
