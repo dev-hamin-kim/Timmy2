@@ -9,6 +9,7 @@
         "README.md"
     ],
     "dependencies": {
+        "@fluentui/react-components": "^9.72.9",
         "@fluidframework/azure-client": "^1.0.0",
         "@microsoft/live-share": "^1.0.0",
         "@microsoft/live-share-canvas": "^1.4.1",
