@@ -146,14 +146,21 @@ export const PollPage = () => {
       <div
         style={{
           padding: "12px 16px",
-          borderBottom: "1px solid #e1e1e1",
+          borderBottom: "1px solid var(--colorNeutralStroke2)",
           flexShrink: 0,
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
         }}
       >
-        <strong>Polls</strong>
+        <span
+          style={{
+            color: "var(--colorNeutralForeground1)",
+            fontWeight: 600,
+          }}
+        >
+          Polls
+        </span>
         <button onClick={onClickingCreatePoll}>Create</button>
       </div>
     

@@ -115,8 +115,8 @@ export const LiveCanvasPage = () => {
           style={{
             position: "absolute",
             inset: 0,
-            background: "#fafafa",
-            border: "1px solid #ccc",
+            background: "var(--colorNeutralBackground1)",
+            border: "1px solid var(--colorNeutralStroke2)",
           }}
           ref={liveCanvasRef}
         />
@@ -128,7 +128,7 @@ export const LiveCanvasPage = () => {
               right: 16,
               width: 420,
               height: "calc(100% - 32px)",
-              background: "#ffffff",
+              background: "var(--colorNeutralBackground2)",
               borderRadius: 12,
               boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
               overflow: "hidden",
@@ -147,7 +147,7 @@ export const LiveCanvasPage = () => {
               right: isPollsShown ? 452 : 16,
               width: 420,
               height: "calc(100% - 32px)",
-              background: "#ffffff",
+              background: "var(--colorNeutralBackground1)",
               borderRadius: 12,
               boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
               overflow: "hidden",

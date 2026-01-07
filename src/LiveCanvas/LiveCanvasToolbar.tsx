@@ -131,7 +131,7 @@ export const LiveCanvasToolBar = ({ inkingManager, onTogglePolls }: LiveCanvasTo
           bottom: 24,
           left: "50%",
           transform: "translateX(-50%)",
-          background: "#ffffffcc",
+          background: "var(--colorNeutralBackground2)",
           borderRadius: 12,
           padding: 8,
         }}
@@ -182,7 +182,7 @@ export const LiveCanvasToolBar = ({ inkingManager, onTogglePolls }: LiveCanvasTo
           position: "fixed",
           bottom: 24,
           right: 24,
-          background: "#ffffffcc",
+          background: "var(--colorNeutralBackground2)",
           borderRadius: 12,
           padding: 4,
         }}
@@ -205,7 +205,7 @@ export const LiveCanvasToolBar = ({ inkingManager, onTogglePolls }: LiveCanvasTo
           position: "fixed",
           top: 24,
           right: 24,
-          background: "#ffffffcc",
+          background: "var(--colorNeutralBackground2)",
           borderRadius: 12,
           padding: 4,
           zIndex: 20,
