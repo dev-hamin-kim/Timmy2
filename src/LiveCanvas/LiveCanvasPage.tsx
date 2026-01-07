@@ -12,7 +12,20 @@ export const LiveCanvasPage = () => {
   const [isPollsShown, setIsPollsShown] = useState(false);
   const [isCalendarShown, setIsCalendarShown] = useState(false);
   const liveCanvasRef = useRef<HTMLDivElement | null>(null);
-  const { inkingManager } = useLiveCanvas(SHARED_CANVAS_KEY, liveCanvasRef);
+
+  // Enable active inking and cursor sharing. Pass `true` for the `active` arg
+  // and the `isCursorShared` arg so the inking manager listens and cursors are shared.
+  const { liveCanvas, inkingManager } = useLiveCanvas(
+    SHARED_CANVAS_KEY,
+    liveCanvasRef,
+    true, // active
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    true // isCursorShared
+  );
 
   const togglePolls = () => {
     setIsPollsShown((prev) => !prev);
