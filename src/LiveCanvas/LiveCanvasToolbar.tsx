@@ -20,6 +20,7 @@ import {
   ZoomOut24Regular,
   ArrowReset24Regular,
   Poll24Regular,
+  Calendar24Regular,
 } from "@fluentui/react-icons";
 import { useCallback, useState } from "react";
 
@@ -33,12 +34,18 @@ enum Direction {
 interface LiveCanvasToolBarProp {
   inkingManager?: InkingManager;
   onTogglePolls?: () => void;
+  onToggleCalendar?: () => void;
 }
 
-export const LiveCanvasToolBar = ({ inkingManager, onTogglePolls }: LiveCanvasToolBarProp) => {
+export const LiveCanvasToolBar = ({
+  inkingManager,
+  onTogglePolls,
+  onToggleCalendar,
+}: LiveCanvasToolBarProp) => {
   const [activeTool, setActiveTool] = useState<
     "pen" | "laser" | "highlighter" | "eraser"
   >("pen");
+  // calendar visibility is controlled by parent (LiveCanvasPage).
   const setToPen = useCallback(() => {
     if (!inkingManager) return;
     inkingManager.tool = InkingTool.pen;
@@ -196,6 +203,7 @@ export const LiveCanvasToolBar = ({ inkingManager, onTogglePolls }: LiveCanvasTo
         <Tooltip content="Zoom Out" relationship="label">
           <ToolbarButton icon={<ZoomOut24Regular />} onClick={zoomOut} />
         </Tooltip>
+        <ToolbarDivider />
       </Toolbar>
 
       {/* Top-right Poll toggle */}
@@ -212,9 +220,12 @@ export const LiveCanvasToolBar = ({ inkingManager, onTogglePolls }: LiveCanvasTo
         }}
       >
         <Tooltip content="Polls" relationship="label">
+          <ToolbarButton icon={<Poll24Regular />} onClick={onTogglePolls} />
+        </Tooltip>
+        <Tooltip content="Calendar" relationship="label">
           <ToolbarButton
-            icon={<Poll24Regular />}
-            onClick={onTogglePolls}
+            icon={<Calendar24Regular />}
+            onClick={onToggleCalendar}
           />
         </Tooltip>
       </Toolbar>

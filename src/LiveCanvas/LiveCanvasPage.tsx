@@ -4,7 +4,7 @@ import { useLiveCanvas } from "@microsoft/live-share-react";
 import { generateUniqueId } from "@microsoft/live-share-canvas/bin/core/internals";
 
 import { PollPage } from "../Poll/PollPage";
-import { CalendarPage } from "../Tab/CalendarPage";
+import { CalendarPage } from "../Calendar/CalendarPage";
 import { LiveCanvasToolBar } from "./LiveCanvasToolbar";
 
 const UNIQUE_KEY = generateUniqueId();
@@ -162,6 +162,7 @@ export const LiveCanvasPage = () => {
       <LiveCanvasToolBar
         inkingManager={inkingManager}
         onTogglePolls={togglePolls}
+        onToggleCalendar={onClickingCalendar}
       />
     </>
   );
