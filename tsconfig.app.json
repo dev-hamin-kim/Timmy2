@@ -22,5 +22,5 @@
     "noUncheckedSideEffectImports": true,
     "forceConsistentCasingInFileNames": false
   },
-  "include": ["src/Tab", "src/Poll"]
+  "include": ["src/Tab", "src/Poll", "src/LiveCanvas"]
 }

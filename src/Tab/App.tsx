@@ -8,7 +8,7 @@ import {
   teamsLightTheme,
 } from "@fluentui/react-components";
 
-import { LiveCanvasPage } from "./LiveCanvasPage";
+import { LiveCanvasPage } from "../LiveCanvas/LiveCanvasPage";
 import "./App.css";
 
 enum TeamsTheme {
