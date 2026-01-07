@@ -4,11 +4,7 @@ import {
   ToolbarButton,
   ToolbarDivider,
 } from "@fluentui/react-components";
-import {
-  InkingManager,
-  InkingTool,
-  IPoint,
-} from "@microsoft/live-share-canvas";
+import { InkingManager, InkingTool } from "@microsoft/live-share-canvas";
 
 import {
   Pen24Regular,
@@ -23,13 +19,6 @@ import {
   Calendar24Regular,
 } from "@fluentui/react-icons";
 import { useCallback, useState } from "react";
-
-enum Direction {
-  Up,
-  Down,
-  Left,
-  Right,
-}
 
 interface LiveCanvasToolBarProp {
   inkingManager?: InkingManager;
@@ -100,34 +89,6 @@ export const LiveCanvasToolBar = ({
     inkingManager.offset = { x: 0, y: 0 };
   }, [inkingManager]);
 
-  const pan = useCallback(
-    (direction: Direction, amount: number) => {
-      if (!inkingManager) {
-        return;
-      }
-
-      const currentOffset = inkingManager.offset;
-
-      const newOffset: IPoint = { ...currentOffset };
-      switch (direction) {
-        case Direction.Up:
-          newOffset.y -= amount;
-          break;
-        case Direction.Down:
-          newOffset.y += amount;
-          break;
-        case Direction.Left:
-          newOffset.x -= amount;
-          break;
-        case Direction.Right:
-          newOffset.x += amount;
-          break;
-      }
-
-      inkingManager.offset = newOffset;
-    },
-    [inkingManager]
-  );
 
   return (
     <>
