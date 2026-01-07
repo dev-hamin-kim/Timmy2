@@ -1,11 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 
-import { app, dialog, DialogDimension } from "@microsoft/teams-js";
+import { app } from "@microsoft/teams-js";
 
 import { useLivePoll } from "./useLivePoll";
 import { CreatePollResult, PollState } from "./types";
-import { createPollCard } from "./AdaptiveCards";
 import { PollList } from "./PollList";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogSurface,
+  DialogTitle,
+  DialogBody,
+  DialogActions,
+  DialogContent,
+  Button,
+  Input,
+  Field,
+  Checkbox,
+} from "@fluentui/react-components";
 
 export const PollPage = () => {
   const { pollState, isInitialized } = useLivePoll();
@@ -75,67 +87,48 @@ export const PollPage = () => {
     pollState.emit("newPollCreated", updatedPolls);
   };
 
-  const cardSize = {
-    height: DialogDimension.Medium,
-    width: DialogDimension.Medium,
-  };
+  // removed Adaptive Card usage; using local dialog instead
 
-  const onClickingCreatePoll = () => {
-    dialog.adaptiveCard.open(
-      { card: JSON.stringify(createPollCard), size: cardSize },
-      async (response) => {
-        if (response.err) {
-          console.log(response.err);
-          return;
-        }
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [question, setQuestion] = useState("");
+  const [option1, setOption1] = useState("");
+  const [option2, setOption2] = useState("");
+  const [option3, setOption3] = useState("");
+  const [option4, setOption4] = useState("");
+  const [allowMultiple, setAllowMultiple] = useState(false);
 
-        if (response.result === undefined) return;
-        console.log("response1: ", response.result);
-        // Ensure result is an object and matches expected shape at runtime,
-        // then cast to CreatePollResult for TypeScript and pass the actual user id string.
-        if (typeof response.result !== "string") {
-          console.log("response2: ", response.result);
-          const result = response.result as CreatePollResult;
+  const onClickingCreatePoll = () => setIsDialogOpen(true);
 
-          // Basic runtime validation to avoid calling handler with an invalid shape
-          if (
-            typeof result.action === "undefined" ||
-            typeof result.question !== "string" ||
-            typeof result.option1 !== "string" ||
-            typeof result.option2 !== "string" ||
-            typeof result.allowMultiple === "undefined"
-          ) {
-            console.warn(
-              "Adaptive card returned unexpected result shape:",
-              result
-            );
-            return;
-          }
+  const handleSubmitCreate = async () => {
+    if (!userID.current) {
+      console.warn("userID not available");
+      return;
+    }
 
-          if (!userID.current) {
-            console.warn("userID not available");
-            return;
-          }
-          console.log("response3: ", response.result);
+    const result: CreatePollResult = {
+      action: "createPoll",
+      question,
+      option1,
+      option2,
+      option3,
+      option4,
+      allowMultiple: allowMultiple ? "true" : "false",
+    };
 
-          await handleCreatePoll(result, userID.current);
-        } else {
-          const parsedResult = JSON.parse(response.result) as CreatePollResult;
-          console.log("parsed Result", parsedResult);
+    await handleCreatePoll(result, userID.current);
 
-          if (!userID.current) {
-            console.warn("userID not available");
-            return;
-          }
-
-          await handleCreatePoll(parsedResult, userID.current);
-        }
-      }
-    );
+    // reset
+    setQuestion("");
+    setOption1("");
+    setOption2("");
+    setOption3("");
+    setOption4("");
+    setAllowMultiple(false);
+    setIsDialogOpen(false);
   };
 
   return (
-        <div
+    <div
       style={{
         height: "100%",
         display: "flex",
@@ -161,9 +154,8 @@ export const PollPage = () => {
         >
           Polls
         </span>
-        <button onClick={onClickingCreatePoll}>Create</button>
       </div>
-    
+
       {/* Scrollable content */}
       <div
         style={{
@@ -172,12 +164,79 @@ export const PollPage = () => {
           padding: 12,
         }}
       >
-        <PollList
-          polls={polls}
-          userID={userID.current}
-          pollState={pollState}
-        />
+        <PollList polls={polls} userID={userID.current} pollState={pollState} />
       </div>
+      <Button onClick={onClickingCreatePoll}>Create</Button>
+
+      {/* Create Poll Dialog */}
+      <Dialog
+        open={isDialogOpen}
+        onOpenChange={(_, data) => setIsDialogOpen(data.open)}
+      >
+        <DialogSurface>
+          <DialogBody>
+            <DialogTitle>Create Poll</DialogTitle>
+            <DialogContent>
+              <div
+                style={{ display: "flex", flexDirection: "column", gap: 12 }}
+              >
+                <Field label="Question" required>
+                  <Input
+                    value={question}
+                    onChange={(e) => setQuestion(e.target.value)}
+                  />
+                </Field>
+
+                <Field label="Option 1" required>
+                  <Input
+                    value={option1}
+                    onChange={(e) => setOption1(e.target.value)}
+                  />
+                </Field>
+
+                <Field label="Option 2" required>
+                  <Input
+                    value={option2}
+                    onChange={(e) => setOption2(e.target.value)}
+                  />
+                </Field>
+
+                <Field label="Option 3">
+                  <Input
+                    value={option3}
+                    onChange={(e) => setOption3(e.target.value)}
+                  />
+                </Field>
+
+                <Field label="Option 4">
+                  <Input
+                    value={option4}
+                    onChange={(e) => setOption4(e.target.value)}
+                  />
+                </Field>
+
+                <Checkbox
+                  label="Allow multiple selections"
+                  checked={allowMultiple}
+                  onChange={(_, data) => setAllowMultiple(!!data.checked)}
+                />
+              </div>
+            </DialogContent>
+            <DialogActions>
+              <DialogTrigger disableButtonEnhancement>
+                <Button appearance="secondary">Cancel</Button>
+              </DialogTrigger>
+              <Button
+                appearance="primary"
+                onClick={handleSubmitCreate}
+                disabled={!question || !option1 || !option2}
+              >
+                Create
+              </Button>
+            </DialogActions>
+          </DialogBody>
+        </DialogSurface>
+      </Dialog>
     </div>
   );
 };
