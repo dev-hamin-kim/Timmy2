@@ -1,18 +1,13 @@
 import { useRef, useCallback, useState, useEffect } from "react";
 
-import { InkingTool, IPoint } from "@microsoft/live-share-canvas";
 import { useLiveCanvas } from "@microsoft/live-share-react";
-import { meeting } from "@microsoft/teams-js";
 import { generateUniqueId } from "@microsoft/live-share-canvas/bin/core/internals";
 
 import { PollPage } from "../Poll/PollPage";
 import { CalendarPage } from "../Tab/CalendarPage";
 import { LiveCanvasToolBar } from "./LiveCanvasToolbar";
 
-
-
 const UNIQUE_KEY = generateUniqueId();
-
 
 // TODO: Adaptive canvas and pen color?
 export const LiveCanvasPage = () => {
@@ -24,16 +19,9 @@ export const LiveCanvasPage = () => {
     liveCanvasRef
   );
 
-
-
-  meeting.getAppContentStageSharingState((error, result) => {
-    if (result?.isAppSharing) {
-      // close sidepanel upon shared to stage
-      // -> cannot be done since there's no such api. (at least according to my knowledge?)
-    }
-  });
-
-  
+  const togglePolls = () => {
+    setIsPollsShown((prev) => !prev);
+  };
 
   const onClickingCalendar = () => {
     setIsCalendarShown(!isCalendarShown);
@@ -132,40 +120,49 @@ export const LiveCanvasPage = () => {
           }}
           ref={liveCanvasRef}
         />
-        {isPollsShown ? (
+        {isPollsShown && (
           <div
             style={{
               position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              background: "#0420fa",
+              top: 16,
+              right: 16,
+              width: 420,
+              height: "calc(100% - 32px)",
+              background: "#ffffff",
+              borderRadius: 12,
+              boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+              overflow: "hidden",
+              pointerEvents: "auto",
+              zIndex: 10,
             }}
           >
             <PollPage />
           </div>
-        ) : (
-          <></>
         )}
-        {isCalendarShown ? (
+        {isCalendarShown && (
           <div
             style={{
               position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              background: "#0c7608ff",
+              top: 16,
+              right: isPollsShown ? 452 : 16,
+              width: 420,
+              height: "calc(100% - 32px)",
+              background: "#ffffff",
+              borderRadius: 12,
+              boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+              overflow: "hidden",
+              pointerEvents: "auto",
+              zIndex: 9,
             }}
           >
             <CalendarPage />
           </div>
-        ) : (
-          <></>
         )}
       </div>
-      <LiveCanvasToolBar inkingManager={inkingManager}  />
+      <LiveCanvasToolBar
+        inkingManager={inkingManager}
+        onTogglePolls={togglePolls}
+      />
     </>
   );
 };

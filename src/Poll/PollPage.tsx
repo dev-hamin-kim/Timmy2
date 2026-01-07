@@ -135,11 +135,42 @@ export const PollPage = () => {
   };
 
   return (
-    <>
-      <div>
-        <button onClick={onClickingCreatePoll}>Create Poll</button>
-        <PollList polls={polls} userID={userID.current} pollState={pollState} />
+        <div
+      style={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      {/* Header */}
+      <div
+        style={{
+          padding: "12px 16px",
+          borderBottom: "1px solid #e1e1e1",
+          flexShrink: 0,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <strong>Polls</strong>
+        <button onClick={onClickingCreatePoll}>Create</button>
       </div>
-    </>
+    
+      {/* Scrollable content */}
+      <div
+        style={{
+          flex: 1,
+          overflowY: "auto",
+          padding: 12,
+        }}
+      >
+        <PollList
+          polls={polls}
+          userID={userID.current}
+          pollState={pollState}
+        />
+      </div>
+    </div>
   );
 };

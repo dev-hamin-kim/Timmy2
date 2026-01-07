@@ -19,6 +19,7 @@ import {
   ZoomIn24Regular,
   ZoomOut24Regular,
   ArrowReset24Regular,
+  Poll24Regular,
 } from "@fluentui/react-icons";
 import { useCallback, useState } from "react";
 
@@ -31,9 +32,10 @@ enum Direction {
 
 interface LiveCanvasToolBarProp {
   inkingManager?: InkingManager;
+  onTogglePolls?: () => void;
 }
 
-export const LiveCanvasToolBar = ({ inkingManager }: LiveCanvasToolBarProp) => {
+export const LiveCanvasToolBar = ({ inkingManager, onTogglePolls }: LiveCanvasToolBarProp) => {
   const [activeTool, setActiveTool] = useState<
     "pen" | "laser" | "highlighter" | "eraser"
   >("pen");
@@ -193,6 +195,27 @@ export const LiveCanvasToolBar = ({ inkingManager }: LiveCanvasToolBarProp) => {
         </Tooltip>
         <Tooltip content="Zoom Out" relationship="label">
           <ToolbarButton icon={<ZoomOut24Regular />} onClick={zoomOut} />
+        </Tooltip>
+      </Toolbar>
+
+      {/* Top-right Poll toggle */}
+      <Toolbar
+        vertical
+        style={{
+          position: "fixed",
+          top: 24,
+          right: 24,
+          background: "#ffffffcc",
+          borderRadius: 12,
+          padding: 4,
+          zIndex: 20,
+        }}
+      >
+        <Tooltip content="Polls" relationship="label">
+          <ToolbarButton
+            icon={<Poll24Regular />}
+            onClick={onTogglePolls}
+          />
         </Tooltip>
       </Toolbar>
     </>

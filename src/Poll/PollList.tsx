@@ -52,7 +52,7 @@ export function PollList({ polls, userID, pollState }: pollListProps) {
   };
 
   return (
-    <div>
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       {polls.length === 0 && <p>No polls yet</p>}
 
       {polls.map((poll) => (
