@@ -4,10 +4,10 @@
   "version": "1.0.0",
   "id": "${{TEAMS_APP_ID}}",
   "developer": {
-    "name": "My App, Inc.",
-    "websiteUrl": "https://www.example.com",
-    "privacyUrl": "https://www.example.com/privacy",
-    "termsOfUseUrl": "https://www.example.com/termsofuse"
+    "name": "Hamin Kim",
+    "websiteUrl": "https://haminkim.cloud/about-me/",
+    "privacyUrl": "https://haminkim.cloud/about-me/",
+    "termsOfUseUrl": "https://haminkim.cloud/about-me/"
   },
   "icons": {
     "color": "color.png",
@@ -15,11 +15,11 @@
   },
   "name": {
     "short": "Timmy2${{APP_NAME_SUFFIX}}",
-    "full": "Full name for Timmy2"
+    "full": "Timmy2 - Colaboration app for Microsoft Teams"
   },
   "description": {
-    "short": "Short description of Timmy2",
-    "full": "Full description of Timmy2"
+    "short": "Say hi to Timmy2!",
+    "full": "Timmy2 is colaboration app for Microsoft Teams. It supports Live Canvas that integrates to your meeting smoothly."
   },
   "accentColor": "#FFFFFF",
   "bots": [],
@@ -27,7 +27,7 @@
   "staticTabs": [
     {
       "entityId": "index0",
-      "name": "Home",
+      "name": "Timmy2",
       "contentUrl": "${{TAB_ENDPOINT}}/tabs/home",
       "websiteUrl": "${{TAB_ENDPOINT}}/tabs/home",
       "scopes": ["personal", "groupChat", "team"],
