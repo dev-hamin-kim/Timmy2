@@ -1,67 +1,125 @@
-# Overview of the Basic Tab template
+## 설치 및 실행 방법
 
-This template showcases how Microsoft Teams supports the ability to run web-based UI inside "custom tabs" that users can install either for just themselves (personal tabs) or within a team or group chat context.
+### 사전 요구사항
 
-## Get started with the Basic Tab template
+#### 1. 개발 계정 준비
+- **Microsoft 365 계정**: Teams를 사용할 수 있는 계정이 필요합니다
+  - Microsoft 365 Developer Sandbox (정책 변경으로 무료 신청이 제한될 수 있음)
+  - 또는 Microsoft 365 Business Basic 이상의 유료 구독
+- **Azure 계정**: 앱 배포 및 리소스 관리를 위해 필요합니다
 
-> **Prerequisites**
->
-> To run the basic tab template in your local dev machine, you will need:
->
-> - [Node.js](https://nodejs.org/), supported versions: >=20.
-> - A [Microsoft 365 account for development](https://docs.microsoft.com/microsoftteams/platform/toolkit/accounts)
->   Please note that after you enrolled your developer tenant in Office 365 Target Release, it may take couple days for the enrollment to take effect.
-> - [Microsoft 365 Agents Toolkit Visual Studio Code Extension](https://aka.ms/teams-toolkit) version 6.0.0 and higher or [Microsoft 365 Agents Toolkit CLI](https://aka.ms/teamsfx-toolkit-cli)
+#### 2. 개발 도구 설치
+- **Node.js** (권장 버전: LTS)
+- **Visual Studio Code**
+- **Microsoft 365 Agents Toolkit** (VS Code Extension)
 
-1. First, select the Microsoft 365 Agents Toolkit icon on the left in the VS Code toolbar.
-2. In the Account section, sign in with your [Microsoft 365 account](https://docs.microsoft.com/microsoftteams/platform/toolkit/accounts) if you haven't already.
-3. Press F5 to start debugging which launches your app in Teams using a web browser. Select `Debug in Teams (Edge)` or `Debug in Teams (Chrome)`.
-4. When Teams launches in the browser, select the Add button in the dialog to install your app to Teams.
+### 환경 설정
 
-**Congratulations**! You are running an application that can now show a basic web page in Teams, Outlook and the Microsoft 365 app.
+#### 1. Microsoft 365 Agents Toolkit 설치 및 계정 연동
+1. VS Code Extension Marketplace에서 "Microsoft 365 Agents Toolkit" 검색 후 설치
+2. VS Code 왼쪽 메뉴에서 Toolkit 아이콘 클릭
+3. **Accounts** 섹션에서 다음 계정들로 로그인:
+   - **Microsoft 365 계정**: Teams 테스트를 위한 계정
+   - **Azure 계정**: 앱 배포 및 리소스 관리용 계정
 
-![Basic Tab](https://github.com/user-attachments/assets/e8121c82-ddbc-493f-9afb-34db2a4b8e73)
+> **참고**: 두 계정 모두 정상적으로 연결되어야 Teams 앱 생성, 로컬 실행, 배포가 가능합니다.
 
-## What's included in the template
+#### 2. 프로젝트 클론 및 의존성 설치
+```bash
+# 프로젝트 클론
+git clone https://github.com/dev-hamin-kim/Timmy2.git
+cd Timmy2
 
-| Folder       | Contents                                     |
-| ------------ | -------------------------------------------- |
-| `.vscode`    | VSCode files for debugging                   |
-| `appPackage` | Templates for the application manifest |
-| `env`        | Environment files                            |
-| `infra`      | Templates for provisioning Azure resources   |
-| `src`        | The source code for the application    |
+# 의존성 설치
+npm install
+```
 
-The following files can be customized and demonstrate an example implementation to get you started.
+### 로컬 실행
 
-| File                             | Contents                                                                                                        |
-| -------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `index.html`                     | HTML file.                                                                                                      |
-| `src/Tab/App.css`                | CSS file for the app.                                                                                           |
-| `src/Tab/App.tsx`                | Tab source file. It calls `teamsjs` SDK to get the context of on which Microsoft 365 application your app is running.      |
-| `src/index.ts`                   | Starting the app using [Microsoft Teams SDK](https://aka.ms/teams-ai-library-v2).                                                                     |
-| `vite.config.js`                 | Configuration for Vite build tool.                                                                              |  
-| `nodemon.json`                   | Configuration for Nodemon to watch and restart the server.                                                      |
+#### 1. 개발 서버 실행
+VS Code의 Microsoft 365 Agents Toolkit을 사용:
+1. Toolkit 패널에서 **Local** 섹션 확인
+2. **Preview Your Teams App (F5)** 버튼 클릭
 
-The following are Microsoft 365 Agents Toolkit specific project files. You can [visit a complete guide on Github](https://github.com/OfficeDev/TeamsFx/wiki/Teams-Toolkit-Visual-Studio-Code-v5-Guide#overview) to understand how Microsoft 365 Agents Toolkit works.
+#### 2. Teams에서 앱 테스트
 
-| File                 | Contents                                                                                                                                  |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `m365agents.yml`       | This is the main Microsoft 365 Agents Toolkit project file. The project file defines two primary things: Properties and configuration Stage definitions. |
-| `m365agents.local.yml` | This overrides `m365agents.yml` with actions that enable local execution and debugging.                                                     |
+##### 앱 패키지 준비
+프로젝트를 빌드하면 `appPackage/build` 디렉토리에 `.zip` 파일이 생성됩니다.
 
-## Extend the Basic Tab template
+##### Teams 미팅에서 앱 실행하기
 
-Following documentation will help you to extend the Basic Tab template.
+1. **Teams 캘린더에서 테스트용 미팅 일정 생성**
+   - Teams 앱을 열고 왼쪽 메뉴에서 **캘린더** 선택
+   - **새 모임** 버튼을 클릭하여 테스트용 미팅 생성
 
-- [Add or manage the environment](https://learn.microsoft.com/microsoftteams/platform/toolkit/teamsfx-multi-env)
-- [Create multi-capability app](https://learn.microsoft.com/microsoftteams/platform/toolkit/add-capability)
-- [Access data in Microsoft Graph](https://learn.microsoft.com/microsoftteams/platform/toolkit/teamsfx-sdk#microsoft-graph-scenarios)
-- [Use an existing Microsoft Entra application](https://learn.microsoft.com/microsoftteams/platform/toolkit/use-existing-aad-app)
-- [Customize the app manifest](https://learn.microsoft.com/microsoftteams/platform/toolkit/teamsfx-preview-and-customize-app-manifest)
-- Host your app in Azure by [provision cloud resources](https://learn.microsoft.com/microsoftteams/platform/toolkit/provision) and [deploy the code to cloud](https://learn.microsoft.com/microsoftteams/platform/toolkit/deploy)
-- [Collaborate on app development](https://learn.microsoft.com/microsoftteams/platform/toolkit/teamsfx-collaboration)
-- [Set up the CI/CD pipeline](https://learn.microsoft.com/microsoftteams/platform/toolkit/use-cicd-template)
-- [Publish the app to your organization or the Microsoft app store](https://learn.microsoft.com/microsoftteams/platform/toolkit/publish)
-- [Enable the app for multi-tenant](https://aka.ms/m365-agent-multi-tenancy-entra-app)
-- [Preview the app on mobile clients](https://aka.ms/teamsfx-mobile)
+2. **미팅 참가**
+   - 생성한 미팅에 참가합니다
+
+3. **앱 업로드**
+   - 미팅 화면에서 **+ 앱** 버튼 클릭
+   - 나타나는 플라이아웃 메뉴에서 **앱 관리** 선택
+   - **앱 관리** 창에서 **사용자 지정 앱 업로드** 클릭
+   
+   > **사용자 지정 앱 업로드 옵션이 보이지 않나요?**  
+   > 테넌트에서 사용자 지정 앱을 활성화해야 합니다. [자세한 지침은 여기를 참조하세요](https://docs.microsoft.com/ko-kr/microsoftteams/teams-custom-app-policies-and-settings)
+
+4. **앱 패키지 선택**
+   - 이전에 생성한 `.zip` 파일을 선택하여 업로드
+
+5. **앱 추가**
+   - 표시되는 대화 상자에서 **추가** 버튼을 클릭하여 미팅에 앱 추가
+
+6. **앱 활성화**
+   - 미팅 화면으로 돌아와서 다시 **+ 앱** 버튼 클릭
+   - **앱 찾기** 텍스트 상자에 업로드한 앱 이름 입력
+   - 앱을 선택하여 미팅에서 활성화
+
+7. **앱 구성**
+   - 구성 대화 상자가 나타나면 **저장** 버튼을 클릭하여 미팅에 앱 추가
+
+8. **메인 스테이지로 공유**
+   - 사이드 패널에서 **공유 아이콘**을 클릭하여 앱을 미팅의 메인 스테이지에 표시
+
+9. **완료!**
+   - 이제 미팅 스테이지에서 앱이 실행되는 것을 확인할 수 있습니다
+   - 미팅에 초대된 다른 참가자들도 미팅에 참가하면 메인 스테이지에서 앱을 볼 수 있습니다
+
+### 빌드 및 배포
+
+#### Dev server 빌드
+
+#### Azure에 배포
+Microsoft 365 Agents Toolkit을 사용한 배포:
+1. Toolkit 패널에서 **Lifecycle** 섹션 확인
+2. **Provision** → **Deploy** 순서로 실행
+
+> **주의사항**:
+> - VSCode를 장시간 실행한 경우 인증 토큰이 만료되어 provisioning/deploying이 멈출 수 있습니다
+> - 이 경우 VSCode를 재시작한 후 다시 시도하세요
+
+### 문제 해결
+
+#### 흔히 발생하는 문제
+
+1. **"사용자 지정 앱 업로드" 옵션이 보이지 않음**
+   - 테넌트 관리자에게 사용자 지정 앱 정책 활성화를 요청하세요
+   - [Teams 사용자 지정 앱 정책 설정 가이드](https://docs.microsoft.com/ko-kr/microsoftteams/teams-custom-app-policies-and-settings)
+
+2. **SDK 초기화 오류**
+   - Teams SDK가 완전히 초기화된 후 Live Share 관련 기능을 호출하는지 확인하세요
+   - `teamsJs.app.initialize()`가 완료된 후 `LiveShareHost.create()` 호출
+
+3. **Provisioning/Deploying 멈춤**
+   - VSCode를 재시작하세요
+
+4. **로컬 테스트 시 앱이 로드되지 않음**
+   - 개발 서버가 정상적으로 실행 중인지 확인
+   - 브라우저 콘솔에서 CORS 또는 네트워크 오류 확인
+   - Manifest 파일의 URL 설정이 올바른지 확인
+
+더 자세한 문제 해결 방법은 프로젝트의 [개발 노트](timmy_troubleshooting.md) 문서를 참조하세요.
+
+### 참고 문서
+- [Microsoft Teams 공식 문서](https://learn.microsoft.com/ko-kr/microsoftteams/platform/)
+- [Microsoft 365 Agents Toolkit 문서](https://learn.microsoft.com/ko-kr/microsoftteams/platform/toolkit/teams-toolkit-fundamentals)
+- [Live Share SDK 문서](https://learn.microsoft.com/ko-kr/microsoftteams/platform/apps-in-teams-meetings/teams-live-share-overview)
