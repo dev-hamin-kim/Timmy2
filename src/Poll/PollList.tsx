@@ -10,7 +10,7 @@ import {
   makeStyles,
   Button,
 } from "@fluentui/react-components";
-import { useState, ComponentType } from "react";
+import { useState, ComponentType, memo } from "react";
 import {
   DonutChart,
   VerticalBarChart,
@@ -53,7 +53,7 @@ interface pollListProps {
   pollState?: LiveState<PollState[]>;
 }
 
-export function PollList({ polls, userID, pollState }: pollListProps) {
+export const PollList = memo(function PollList({ polls, userID, pollState }: pollListProps) {
   const styles = useStyles();
   const [chartTypeByPoll, setChartTypeByPoll] = useState<
     Record<string, "donut" | "bar">
@@ -100,7 +100,7 @@ export function PollList({ polls, userID, pollState }: pollListProps) {
       );
     }
 
-    // bar
+    // bar — give the vertical bar more horizontal room so bars don't look squashed
     const barData: VerticalBarChartDataPoint[] = poll.options.map((opt, i) => ({
       x: opt.text,
       y: getVoteCount(poll, opt.id),
@@ -112,9 +112,12 @@ export function PollList({ polls, userID, pollState }: pollListProps) {
     const VBarTyped: ComponentType<VerticalBarChartProps> =
       VerticalBarChart as ComponentType<VerticalBarChartProps>;
 
+    const barWidth = 220;
+    const barHeight = 120;
+
     return (
-      <div style={{ padding: 8, width: 120 }}>
-        <VBarTyped data={barData} width={120} height={96} />
+      <div style={{ padding: 8, width: barWidth }}>
+        <VBarTyped data={barData} width={barWidth} height={barHeight} />
       </div>
     );
   };
@@ -176,118 +179,109 @@ export function PollList({ polls, userID, pollState }: pollListProps) {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       {polls.length === 0 && (
-        <Text className={styles.emptyText}>No polls yet</Text>
+        <div style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "100%",
+              gap: 8,
+            }}>
+          <Text className={styles.emptyText}>No polls yet</Text>
+        </div>
       )}
 
       {polls.map((poll) => (
         <div key={poll.id} className={styles.pollCard}>
+          <div>
+            <Text className={styles.questionText}>{poll.question}</Text>
+            <div style={{ marginTop: 8 }}>
+              <RadioGroup
+                value={
+                  poll.allowMultiple
+                    ? undefined
+                    : (poll.votes[userID ?? ""] ?? [])[0]
+                }
+              >
+                {poll.options.map((opt) => {
+                  const userVotes = poll.votes[userID ?? ""] ?? [];
+                  const isSelected = userVotes.includes(opt.id);
+
+                  return (
+                    <div key={opt.id} className={styles.optionRow}>
+                      {poll.allowMultiple ? (
+                        <Checkbox
+                          checked={isSelected}
+                          label={opt.text}
+                          onChange={async (_, data) => {
+                            if (!userID) return;
+
+                            const nextSelection = data.checked
+                              ? [...userVotes, opt.id]
+                              : userVotes.filter((id) => id !== opt.id);
+
+                            await submitVote(poll.id, nextSelection, userID);
+                          }}
+                        />
+                      ) : (
+                        <Radio
+                          value={opt.id}
+                          checked={isSelected}
+                          label={opt.text}
+                          onClick={async () => {
+                            if (!userID) return;
+                            await submitVote(poll.id, [opt.id], userID);
+                          }}
+                        />
+                      )}
+
+                      <Text className={styles.metaText}>
+                        {getVoteCount(poll, opt.id)} votes · {" "}
+                        {getVotePercentage(poll, opt.id)}%
+                      </Text>
+                    </div>
+                  );
+                })}
+              </RadioGroup>
+            </div>
+          </div>
+
           <div
             style={{
+              marginTop: 12,
               display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-              gap: 12,
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 8,
             }}
           >
-            <div style={{ flex: 1 }}>
-              <Text className={styles.questionText}>{poll.question}</Text>
-              <div style={{ marginTop: 8 }}>
-                <RadioGroup
-                  value={
-                    poll.allowMultiple
-                      ? undefined
-                      : (poll.votes[userID ?? ""] ?? [])[0]
-                  }
-                >
-                  {poll.options.map((opt) => {
-                    const userVotes = poll.votes[userID ?? ""] ?? [];
-                    const isSelected = userVotes.includes(opt.id);
-
-                    return (
-                      <div key={opt.id} className={styles.optionRow}>
-                        {poll.allowMultiple ? (
-                          <Checkbox
-                            checked={isSelected}
-                            label={opt.text}
-                            onChange={async (_, data) => {
-                              if (!userID) return;
-
-                              const nextSelection = data.checked
-                                ? [...userVotes, opt.id]
-                                : userVotes.filter((id) => id !== opt.id);
-
-                              await submitVote(poll.id, nextSelection, userID);
-                            }}
-                          />
-                        ) : (
-                          <Radio
-                            value={opt.id}
-                            checked={isSelected}
-                            label={opt.text}
-                            onClick={async () => {
-                              if (!userID) return;
-                              await submitVote(poll.id, [opt.id], userID);
-                            }}
-                          />
-                        )}
-
-                        <Text className={styles.metaText}>
-                          {getVoteCount(poll, opt.id)} votes ·{" "}
-                          {getVotePercentage(poll, opt.id)}%
-                        </Text>
-                      </div>
-                    );
-                  })}
-                </RadioGroup>
-              </div>
+            <div style={{ display: "flex", gap: 6 }}>
+              <Button
+                appearance={
+                  chartTypeByPoll[poll.id] === "donut" ? "primary" : "transparent"
+                }
+                onClick={() => setChartTypeByPoll((p) => ({ ...p, [poll.id]: "donut" }))}
+              >
+                Donut
+              </Button>
+              <Button
+                appearance={
+                  chartTypeByPoll[poll.id] === "bar" ? "primary" : "transparent"
+                }
+                onClick={() => setChartTypeByPoll((p) => ({ ...p, [poll.id]: "bar" }))}
+              >
+                Bar
+              </Button>
             </div>
 
-            <div style={{ width: 140, marginLeft: 12, textAlign: "center" }}>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  gap: 6,
-                  marginBottom: 6,
-                }}
-              >
-                <Button
-                  appearance={
-                    chartTypeByPoll[poll.id] === "donut"
-                      ? "primary"
-                      : "transparent"
-                  }
-                  onClick={() =>
-                    setChartTypeByPoll((p) => ({ ...p, [poll.id]: "donut" }))
-                  }
-                >
-                  Donut
-                </Button>
-                <Button
-                  appearance={
-                    chartTypeByPoll[poll.id] === "bar"
-                      ? "primary"
-                      : "transparent"
-                  }
-                  onClick={() =>
-                    setChartTypeByPoll((p) => ({ ...p, [poll.id]: "bar" }))
-                  }
-                >
-                  Bar
-                </Button>
-              </div>
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <PollChart
-                  poll={poll}
-                  type={chartTypeByPoll[poll.id] ?? "donut"}
-                />
-              </div>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <PollChart poll={poll} type={chartTypeByPoll[poll.id] ?? "donut"} />
             </div>
           </div>
         </div>
       ))}
     </div>
   );
-}
+});

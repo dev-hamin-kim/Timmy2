@@ -18,7 +18,7 @@ export const CalendarPage = () => {
   const userID = useRef<string | undefined>(undefined);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<"upcoming" | "all">("upcoming");
+  const [viewMode, setViewMode] = useState<"upcoming" | "all">("all");
 
   useEffect(() => {
     app.getContext().then((context: app.Context) => {
@@ -134,7 +134,7 @@ export const CalendarPage = () => {
         >
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <Calendar20Regular />
-            <Text weight="semibold">Meeting Calendar</Text>
+            <Text weight="semibold" style={{ color: "var(--colorNeutralForeground1)"}}>Meeting Calendar</Text>
           </div>
           <Button
             appearance="primary"
@@ -154,7 +154,6 @@ export const CalendarPage = () => {
           }
           size="small"
         >
-          <Tab value="upcoming">Upcoming</Tab>
           <Tab value="all">All Events</Tab>
         </TabList>
       </div>
@@ -184,13 +183,6 @@ export const CalendarPage = () => {
                 ? "No upcoming events"
                 : "No events scheduled"}
             </Text>
-            <Button
-              appearance="subtle"
-              onClick={() => setIsDialogOpen(true)}
-              size="small"
-            >
-              Create your first event
-            </Button>
           </div>
         ) : (
           filteredEvents.map((event) => (

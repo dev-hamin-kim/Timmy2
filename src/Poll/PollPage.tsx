@@ -18,6 +18,7 @@ import {
   Field,
   Checkbox,
 } from "@fluentui/react-components";
+import { Add20Regular } from "@fluentui/react-icons";
 
 export const PollPage = () => {
   const { pollState, isInitialized } = useLivePoll();
@@ -146,14 +147,25 @@ export const PollPage = () => {
           alignItems: "center",
         }}
       >
-        <span
-          style={{
-            color: "var(--colorNeutralForeground1)",
-            fontWeight: 600,
-          }}
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span
+            style={{
+              color: "var(--colorNeutralForeground1)",
+              fontWeight: 600,
+            }}
+          >
+            Polls
+          </span>
+        </div>
+
+        <Button
+          appearance="primary"
+          icon={<Add20Regular />}
+          onClick={onClickingCreatePoll}
+          size="small"
         >
-          Polls
-        </span>
+          New Poll
+        </Button>
       </div>
 
       {/* Scrollable content */}
@@ -166,7 +178,7 @@ export const PollPage = () => {
       >
         <PollList polls={polls} userID={userID.current} pollState={pollState} />
       </div>
-      <Button onClick={onClickingCreatePoll}>Create</Button>
+      {/* Create button moved to header */}
 
       {/* Create Poll Dialog */}
       <Dialog

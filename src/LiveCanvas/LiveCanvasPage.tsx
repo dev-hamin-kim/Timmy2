@@ -132,16 +132,18 @@ export const LiveCanvasPage = () => {
           <div
             style={{
               position: "absolute",
+              // place the overlay below the top-right toolbar so it doesn't
+              // visually overlap the toolbar icons
               top: 16,
-              right: 16,
+              right: 100,
               width: 420,
-              height: "calc(100% - 32px)",
+              height: "calc(100% - 88px)",
               background: "var(--colorNeutralBackground2)",
               borderRadius: 12,
               boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
               overflow: "hidden",
               pointerEvents: "auto",
-              zIndex: 10,
+              zIndex: 15,
             }}
           >
             <PollPage />
@@ -151,16 +153,18 @@ export const LiveCanvasPage = () => {
           <div
             style={{
               position: "absolute",
+              // shift the calendar to the left of the polls overlay when polls
+              // are open; otherwise anchor it to the same edge below the toolbar
               top: 16,
-              right: isPollsShown ? 452 : 16,
+              right: isPollsShown ? 100 + 420 + 12 : 100,
               width: 420,
-              height: "calc(100% - 32px)",
+              height: "calc(100% - 88px)",
               background: "var(--colorNeutralBackground1)",
               borderRadius: 12,
               boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
               overflow: "hidden",
               pointerEvents: "auto",
-              zIndex: 9,
+              zIndex: 14,
             }}
           >
             <CalendarPage />
