@@ -8,7 +8,18 @@ import {
   RadioGroup,
   Text,
   makeStyles,
+  Button,
 } from "@fluentui/react-components";
+import { useState, ComponentType } from "react";
+import {
+  DonutChart,
+  VerticalBarChart,
+  type DonutChartProps,
+  type VerticalBarChartProps,
+  type ChartProps,
+  type ChartDataPoint,
+  type VerticalBarChartDataPoint,
+} from "@fluentui/react-charts";
 
 const useStyles = makeStyles({
   pollCard: {
@@ -44,6 +55,83 @@ interface pollListProps {
 
 export function PollList({ polls, userID, pollState }: pollListProps) {
   const styles = useStyles();
+  const [chartTypeByPoll, setChartTypeByPoll] = useState<
+    Record<string, "donut" | "bar">
+  >({});
+
+  // toggle handled inline by buttons; helper removed to avoid unused lint
+
+  const PollChart = ({
+    poll,
+    type,
+  }: {
+    poll: PollState;
+    type: "donut" | "bar";
+  }) => {
+    const counts = poll.options.map((opt) => getVoteCount(poll, opt.id));
+    const total = counts.reduce((s, v) => s + v, 0);
+
+    if (total === 0) {
+      return (
+        <div style={{ padding: 12, color: "var(--colorNeutralForeground3)" }}>
+          No votes yet
+        </div>
+      );
+    }
+
+    if (type === "donut") {
+      // Build a ChartProps.chartData array matching the fluent types: ChartDataPoint[]
+      const chartData: ChartDataPoint[] = poll.options.map((opt, i) => ({
+        legend: opt.text,
+        data: getVoteCount(poll, opt.id),
+        color: colorForIndex(i),
+        xAxisCalloutData: opt.text,
+      }));
+
+      const chartProps: ChartProps = { chartData };
+
+      const DonutTyped: ComponentType<DonutChartProps> =
+        DonutChart as ComponentType<DonutChartProps>;
+
+      return (
+        <div style={{ padding: 8 }}>
+          <DonutTyped data={chartProps} width={120} height={120} />
+        </div>
+      );
+    }
+
+    // bar
+    const barData: VerticalBarChartDataPoint[] = poll.options.map((opt, i) => ({
+      x: opt.text,
+      y: getVoteCount(poll, opt.id),
+      legend: opt.text,
+      color: colorForIndex(i),
+      xAxisCalloutData: opt.text,
+    }));
+
+    const VBarTyped: ComponentType<VerticalBarChartProps> =
+      VerticalBarChart as ComponentType<VerticalBarChartProps>;
+
+    return (
+      <div style={{ padding: 8, width: 120 }}>
+        <VBarTyped data={barData} width={120} height={96} />
+      </div>
+    );
+  };
+
+  // helpers for chart
+
+  const colorForIndex = (i: number) => {
+    const palette = [
+      "#0078D4",
+      "#107C10",
+      "#E81123",
+      "#FF8C00",
+      "#5C2D91",
+      "#008272",
+    ];
+    return palette[i % palette.length];
+  };
 
   const submitVote = async (
     pollId: string,
@@ -95,47 +183,109 @@ export function PollList({ polls, userID, pollState }: pollListProps) {
 
       {polls.map((poll) => (
         <div key={poll.id} className={styles.pollCard}>
-          <Text className={styles.questionText}>{poll.question}</Text>
-          <RadioGroup value={poll.allowMultiple ? undefined : (poll.votes[userID ?? ""] ?? [])[0]}>
-            {poll.options.map((opt) => {
-              const userVotes = poll.votes[userID ?? ""] ?? [];
-              const isSelected = userVotes.includes(opt.id);
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              gap: 12,
+            }}
+          >
+            <div style={{ flex: 1 }}>
+              <Text className={styles.questionText}>{poll.question}</Text>
+              <div style={{ marginTop: 8 }}>
+                <RadioGroup
+                  value={
+                    poll.allowMultiple
+                      ? undefined
+                      : (poll.votes[userID ?? ""] ?? [])[0]
+                  }
+                >
+                  {poll.options.map((opt) => {
+                    const userVotes = poll.votes[userID ?? ""] ?? [];
+                    const isSelected = userVotes.includes(opt.id);
 
-              return (
-                <div key={opt.id} className={styles.optionRow}>
-                  {poll.allowMultiple ? (
-                    <Checkbox
-                      checked={isSelected}
-                      label={opt.text}
-                      onChange={async (_, data) => {
-                        if (!userID) return;
+                    return (
+                      <div key={opt.id} className={styles.optionRow}>
+                        {poll.allowMultiple ? (
+                          <Checkbox
+                            checked={isSelected}
+                            label={opt.text}
+                            onChange={async (_, data) => {
+                              if (!userID) return;
 
-                        const nextSelection = data.checked
-                          ? [...userVotes, opt.id]
-                          : userVotes.filter((id) => id !== opt.id);
+                              const nextSelection = data.checked
+                                ? [...userVotes, opt.id]
+                                : userVotes.filter((id) => id !== opt.id);
 
-                        await submitVote(poll.id, nextSelection, userID);
-                      }}
-                    />
-                  ) : (
-                    <Radio
-                      value={opt.id}
-                      checked={isSelected}
-                      label={opt.text}
-                      onClick={async () => {
-                        if (!userID) return;
-                        await submitVote(poll.id, [opt.id], userID);
-                      }}
-                    />
-                  )}
+                              await submitVote(poll.id, nextSelection, userID);
+                            }}
+                          />
+                        ) : (
+                          <Radio
+                            value={opt.id}
+                            checked={isSelected}
+                            label={opt.text}
+                            onClick={async () => {
+                              if (!userID) return;
+                              await submitVote(poll.id, [opt.id], userID);
+                            }}
+                          />
+                        )}
 
-                  <Text className={styles.metaText}>
-                    {getVoteCount(poll, opt.id)} votes · {getVotePercentage(poll, opt.id)}%
-                  </Text>
-                </div>
-              );
-            })}
-          </RadioGroup>
+                        <Text className={styles.metaText}>
+                          {getVoteCount(poll, opt.id)} votes ·{" "}
+                          {getVotePercentage(poll, opt.id)}%
+                        </Text>
+                      </div>
+                    );
+                  })}
+                </RadioGroup>
+              </div>
+            </div>
+
+            <div style={{ width: 140, marginLeft: 12, textAlign: "center" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: 6,
+                  marginBottom: 6,
+                }}
+              >
+                <Button
+                  appearance={
+                    chartTypeByPoll[poll.id] === "donut"
+                      ? "primary"
+                      : "transparent"
+                  }
+                  onClick={() =>
+                    setChartTypeByPoll((p) => ({ ...p, [poll.id]: "donut" }))
+                  }
+                >
+                  Donut
+                </Button>
+                <Button
+                  appearance={
+                    chartTypeByPoll[poll.id] === "bar"
+                      ? "primary"
+                      : "transparent"
+                  }
+                  onClick={() =>
+                    setChartTypeByPoll((p) => ({ ...p, [poll.id]: "bar" }))
+                  }
+                >
+                  Bar
+                </Button>
+              </div>
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <PollChart
+                  poll={poll}
+                  type={chartTypeByPoll[poll.id] ?? "donut"}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       ))}
     </div>
